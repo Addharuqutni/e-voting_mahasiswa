@@ -1,0 +1,65 @@
+// SQLite variant for a 2 GB VPS (no separate database process).
+// Enable with:
+//   DATABASE_URL="file:./pemira.db" npx prisma db push --schema prisma/schema.sqlite.prisma
+//   DATABASE_URL="file:./pemira.db" node prisma/seed.mjs
+// Differences from the Postgres schema: SQLite has no enum type (Role becomes a
+// String) and the relation mode is explicit.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "sqlite"
+  url          = env("DATABASE_URL")
+  relationMode = "foreignKeys"
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  nim          String?   @unique
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         String    @default("VOTER")
+  hasVoted     Boolean   @default(false)
+  votedAt      DateTime?
+  sessionTag   String?
+  // Antrean bilik suara: kapan masuk antrean, kapan diizinkan memilih, dan batas waktunya.
+  queueJoinedAt  DateTime?
+  voteAdmittedAt DateTime?
+  voteDeadline   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Candidate {
+  id             Int      @id @default(autoincrement())
+  electionNumber Int      @unique
+  leaderName     String
+  viceName       String
+  photoUrl       String?
+  cvUrl          String?
+  instagram      String?
+  vision         String
+  mission        String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  votes          Vote[]
+}
+
+// Secret ballot: no user_id / session link here, ever.
+model Vote {
+  id          Int       @id @default(autoincrement())
+  candidateId Int
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Restrict)
+  createdAt   DateTime  @default(now())
+}
+
+model SystemSetting {
+  id           Int       @id @default(1)
+  isVotingOpen Boolean   @default(false)
+  startTime    DateTime?
+  endTime      DateTime?
+  announceAt   DateTime?
+  updatedAt    DateTime  @updatedAt
+}

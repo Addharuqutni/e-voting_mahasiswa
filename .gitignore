@@ -1,0 +1,19 @@
+node_modules
+.next
+.env
+uploads
+
+prisma/*.db
+prisma/*.db-journal
+prisma/*.db-wal
+prisma/*.db-shm
+
+# dev artifacts
+.omp/
+dev.log
+prod.log
+shots/
+uploads/photo/*
+uploads/cv/*
+!uploads/photo/.gitkeep
+!uploads/cv/.gitkeep
