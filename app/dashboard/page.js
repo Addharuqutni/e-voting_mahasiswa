@@ -1,24 +1,24 @@
 import BarChart from "@/components/BarChart";
 import ChartLoader from "@/components/ChartLoader";
 import { prisma } from "@/lib/db";
-import { getSetting, votingOpen } from "@/lib/guard";
-import { fmtRange, pct } from "@/lib/format";
+import { current } from "@/lib/jadwal.js";
+import { pct } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const [totalVoters, votersWhoVoted, candidates, votes, setting] = await Promise.all([
+  const [totalVoters, votersWhoVoted, candidates, votes, jadwal] = await Promise.all([
     prisma.user.count({ where: { role: "VOTER" } }),
     prisma.user.count({ where: { role: "VOTER", hasVoted: true } }),
     prisma.candidate.findMany({ orderBy: { electionNumber: "asc" } }),
     prisma.vote.groupBy({ by: ["candidateId"], _count: { _all: true } }),
-    getSetting(),
+    current(),
   ]);
   const counts = Object.fromEntries(votes.map((v) => [v.candidateId, v._count._all]));
   const chartData = Object.fromEntries(candidates.map((c) => [String(c.electionNumber), counts[c.id] ?? 0]));
   const totalVotes = Object.values(chartData).reduce((a, b) => a + b, 0);
   const turnout = pct(votersWhoVoted, totalVoters);
-  const open = votingOpen(setting);
+  const open = jadwal.open;
 
   return (
     <>
@@ -29,7 +29,7 @@ export default async function DashboardPage() {
             <span className="status-dot" aria-hidden="true" />
             {open ? "Pemungutan suara dibuka" : "Pemungutan suara ditutup"}
             <span className="dash-sub-sep" aria-hidden="true">·</span>
-            {fmtRange(setting?.startTime, setting?.endTime)}
+            {jadwal.rangeLabel}
           </p>
         </div>
       </div>

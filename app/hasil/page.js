@@ -2,15 +2,16 @@ import VoterLayout from "@/components/VoterLayout";
 import StatusPanel from "@/components/StatusPanel";
 import BarChart from "@/components/BarChart";
 import ChartLoader from "@/components/ChartLoader";
-import { getSessionUser, votingOpen, getSetting } from "@/lib/guard";
+import { getSessionUser } from "@/lib/guard";
 import { prisma } from "@/lib/db";
-import { fmtDT, fmtRange, pct } from "@/lib/format";
+import { current } from "@/lib/jadwal.js";
+import { pct } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
 export default async function HasilPage() {
   const user = await getSessionUser();
-  const setting = await getSetting();
+  const jadwal = await current();
   const [candidates, votes] = await Promise.all([
     prisma.candidate.findMany({ orderBy: { electionNumber: "asc" } }),
     prisma.vote.groupBy({ by: ["candidateId"], _count: { _all: true } }),
@@ -18,9 +19,8 @@ export default async function HasilPage() {
   const counts = Object.fromEntries(votes.map((v) => [v.candidateId, v._count._all]));
   const chartData = Object.fromEntries(candidates.map((c) => [String(c.electionNumber), counts[c.id] ?? 0]));
   const total = Object.values(chartData).reduce((a, b) => a + b, 0);
-  const open = votingOpen(setting);
-  const announced = setting?.announceAt ? new Date(setting.announceAt) <= new Date() : !open;
-  const visible = user?.role === "ADMIN" || (!open && announced);
+  const open = jadwal.open;
+  const visible = user?.role === "ADMIN" || jadwal.resultsVisible;
 
   if (!visible) {
     const canVote = open && user?.role === "VOTER" && !user.hasVoted;
@@ -32,8 +32,8 @@ export default async function HasilPage() {
           title="Hasil masih terkunci"
           meta={
             <dl className="panel-facts">
-              <div><dt>Pemungutan suara</dt><dd>{fmtRange(setting?.startTime, setting?.endTime)}</dd></div>
-              <div><dt>Pengumuman hasil</dt><dd>{fmtDT(setting?.announceAt)}</dd></div>
+              <div><dt>Pemungutan suara</dt><dd>{jadwal.rangeLabel}</dd></div>
+              <div><dt>Pengumuman hasil</dt><dd>{jadwal.announceLabel}</dd></div>
             </dl>
           }
           actions={

@@ -10,7 +10,7 @@ npm ci
 npm run db:push      # SQLite: prisma/pemira.db (wajib sebelum start)
 npm run db:seed      # HANYA sekali saat setup — menghapus semua data & suara!
 npm run build
-npm test             # 7 test: integritas suara + bilik suara + status sesi
+npm test             # 11 test: integritas suara + Bilik suara + Status sesi + Jadwal
 curl -fsS http://127.0.0.1:3000/api/health
 ```
 

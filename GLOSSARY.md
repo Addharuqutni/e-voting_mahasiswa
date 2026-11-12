@@ -29,5 +29,5 @@ Keadaan satu login Pemilih: belum masuk, menunggu, berada di Bilik suara, sudah 
 _Avoid_: session state, auth state
 
 **Jadwal**:
-Rentang waktu pemungutan suara dan waktu pengumuman hasil.
+Rentang waktu pemungutan suara dan waktu pengumuman hasil, termasuk aturan kapan pemungutan dibuka dan hasil boleh tampil.
 _Avoid_: setting, schedule

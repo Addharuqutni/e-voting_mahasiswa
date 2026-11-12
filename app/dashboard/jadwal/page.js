@@ -2,14 +2,13 @@ import ActionForm from "@/components/ActionForm";
 import ToggleVoting from "@/components/ToggleVoting";
 import Field from "@/components/Field";
 import { saveSchedule } from "@/app/actions";
-import { getSetting, votingOpen } from "@/lib/guard";
-import { fmtDT, toLocalInput } from "@/lib/format";
+import { current } from "@/lib/jadwal.js";
 
 export const dynamic = "force-dynamic";
 
 export default async function JadwalPage() {
-  const setting = await getSetting();
-  const open = votingOpen(setting);
+  const jadwal = await current();
+  const open = jadwal.open;
 
   return (
     <>
@@ -35,13 +34,13 @@ export default async function JadwalPage() {
             confirm={open ? "Simpan perubahan jadwal saat pemungutan sedang berlangsung? Perubahan langsung berlaku ke semua pemilih." : undefined}
           >
             <Field label="Mulai pemungutan" htmlFor="startTime">
-              <input type="datetime-local" className="form-control" id="startTime" name="startTime" defaultValue={toLocalInput(setting?.startTime)} />
+              <input type="datetime-local" className="form-control" id="startTime" name="startTime" defaultValue={jadwal.startInput} />
             </Field>
             <Field label="Selesai pemungutan" htmlFor="endTime">
-              <input type="datetime-local" className="form-control" id="endTime" name="endTime" defaultValue={toLocalInput(setting?.endTime)} />
+              <input type="datetime-local" className="form-control" id="endTime" name="endTime" defaultValue={jadwal.endInput} />
             </Field>
             <Field label="Pengumuman hasil" htmlFor="announceAt" help="Hasil terbuka otomatis pada waktu ini.">
-              <input type="datetime-local" className="form-control" id="announceAt" name="announceAt" defaultValue={toLocalInput(setting?.announceAt)} />
+              <input type="datetime-local" className="form-control" id="announceAt" name="announceAt" defaultValue={jadwal.announceInput} />
             </Field>
           </ActionForm>
         </section>
@@ -58,9 +57,9 @@ export default async function JadwalPage() {
           <ToggleVoting open={open} />
 
           <dl className="facts">
-            <div><dt>Mulai</dt><dd>{fmtDT(setting?.startTime)}</dd></div>
-            <div><dt>Selesai</dt><dd>{fmtDT(setting?.endTime)}</dd></div>
-            <div><dt>Pengumuman</dt><dd>{fmtDT(setting?.announceAt)}</dd></div>
+            <div><dt>Mulai</dt><dd>{jadwal.startLabel}</dd></div>
+            <div><dt>Selesai</dt><dd>{jadwal.endLabel}</dd></div>
+            <div><dt>Pengumuman</dt><dd>{jadwal.announceLabel}</dd></div>
           </dl>
         </section>
       </div>

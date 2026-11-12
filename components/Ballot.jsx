@@ -5,17 +5,6 @@ import Spinner from "./Spinner";
 import Countdown from "./Countdown";
 import { voteTimeoutAction } from "@/app/actions";
 
-const dtf = new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
-const fmt = (v) => (v ? dtf.format(new Date(v)) : "—");
-
-function Schedule({ startTime, endTime }) {
-  if (!startTime || !endTime) return "Belum dijadwalkan";
-  const d = new Date(startTime), e = new Date(endTime);
-  const day = (x) => x.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
-  const time = (x) => x.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
-  return day(d) === day(e) ? `${day(d)}, ${time(d)} – ${time(e)} WIB` : `${day(d)} ${time(d)} – ${day(e)} ${time(e)} WIB`;
-}
-
 function InstagramLink({ handle }) {
   if (!handle) return null;
   return (
@@ -25,7 +14,7 @@ function InstagramLink({ handle }) {
   );
 }
 
-export default function Ballot({ candidates, user, startTime, endTime, deadline, secondsLeft, limitMinutes, booth }) {
+export default function Ballot({ candidates, user, rangeLabel, secondsLeft, limitMinutes, booth }) {
   const [picked, setPicked] = useState(null);
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
@@ -70,7 +59,7 @@ export default function Ballot({ candidates, user, startTime, endTime, deadline,
       <div className="booth-note">
         <span className="meta-item">
           <i className="far fa-clock" aria-hidden="true" />
-          Jadwal: {Schedule({ startTime, endTime })}
+          Jadwal: {rangeLabel} WIB
         </span>
         {booth && <span className="meta-item">Bilik terisi {booth.inBooth}/{booth.slots} · antrean {booth.waiting}</span>}
       </div>

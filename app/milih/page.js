@@ -2,9 +2,10 @@ import VoterLayout from "@/components/VoterLayout";
 import Ballot from "@/components/Ballot";
 import StatusPanel from "@/components/StatusPanel";
 import WaitingRoom from "@/components/WaitingRoom";
-import { requireUser, getSetting } from "@/lib/guard";
+import { requireUser } from "@/lib/guard";
+import { current } from "@/lib/jadwal.js";
 import { prisma } from "@/lib/db";
-import { fmtDT, fmtRange } from "@/lib/format";
+import { fmtDT } from "@/lib/format";
 import { enter, snapshot, BOOTH_MINUTES } from "@/lib/booth.js";
 import { redirect } from "next/navigation";
 
@@ -12,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 export default async function MilihPage() {
   const user = await requireUser("VOTER");
-  const setting = await getSetting();
+  const jadwal = await current();
   const queue = await enter(user);
 
   if (queue.state === "closed") {
@@ -22,7 +23,7 @@ export default async function MilihPage() {
           icon="far fa-clock"
           title="Pemungutan suara ditutup"
           actions={<a className="btn-outline" href="/hasil">Lihat hasil pemilihan</a>}
-          meta={<>Jadwal: {fmtRange(setting?.startTime, setting?.endTime)}</>}
+          meta={<>Jadwal: {jadwal.rangeLabel}</>}
         >
           <p className="panel-sub">Pemilihan Raya Mahasiswa Teknik Telekomunikasi</p>
           <p>Halo <strong>{user.name}</strong>, bilik suara sedang ditutup. Anda tidak dapat mengirim suara di luar jadwal.</p>
@@ -73,8 +74,7 @@ export default async function MilihPage() {
         <Ballot
           candidates={candidates}
           user={{ name: user.name, nim: user.nim }}
-          startTime={setting?.startTime ?? null}
-          endTime={setting?.endTime ?? null}
+          rangeLabel={jadwal.rangeLabel}
           deadline={queue.deadline ?? user.voteDeadline}
           secondsLeft={queue.secondsLeft}
           limitMinutes={BOOTH_MINUTES}

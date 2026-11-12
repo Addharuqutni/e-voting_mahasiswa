@@ -9,6 +9,7 @@ import { prisma } from "@/lib/db";
 import { hashPassword } from "@/lib/password";
 import { getSessionUser, requireUser } from "@/lib/guard";
 import { enter, leave, vote } from "@/lib/booth.js";
+import { update as updateSchedule, toggle as toggleSchedule } from "@/lib/jadwal.js";
 import { rateLimit, resetLimit } from "@/lib/rateLimit";
 
 async function clientIp() {
@@ -170,32 +171,18 @@ export async function importVotersCsv(formData) {
 
 export async function saveSchedule(formData) {
   await requireUser("ADMIN");
-  const start = String(formData.get("startTime") ?? "");
-  const end = String(formData.get("endTime") ?? "");
-  const announce = String(formData.get("announceAt") ?? "");
-  const startAt = start ? new Date(start) : null, endAt = end ? new Date(end) : null;
-  if ((startAt && Number.isNaN(startAt.getTime())) || (endAt && Number.isNaN(endAt.getTime()))) return { error: "Format tanggal tidak valid." };
-  if (startAt && endAt && startAt >= endAt) return { error: "Waktu selesai harus setelah waktu mulai." };
-  await prisma.systemSetting.upsert({
-    where: { id: 1 },
-    create: { id: 1, isVotingOpen: true, startTime: startAt, endTime: endAt, announceAt: announce ? new Date(announce) : null },
-    update: { startTime: startAt, endTime: endAt, announceAt: announce ? new Date(announce) : null },
-  });
+  const result = await updateSchedule(formData);
+  if (result.error) return result;
   revalidatePath("/dashboard/jadwal");
   revalidatePath("/milih");
-  return { ok: "Jadwal disimpan." };
+  return result;
 }
 
 export async function toggleVoting() {
   await requireUser("ADMIN");
-  const setting = await prisma.systemSetting.findUnique({ where: { id: 1 } });
-  await prisma.systemSetting.upsert({
-    where: { id: 1 },
-    create: { id: 1, isVotingOpen: true },
-    update: { isVotingOpen: !setting?.isVotingOpen },
-  });
+  const result = await toggleSchedule();
   revalidatePath("/dashboard/jadwal");
   revalidatePath("/milih");
   revalidatePath("/hasil");
-  return { ok: setting?.isVotingOpen ? "Pemungutan suara ditutup." : "Pemungutan suara dibuka." };
+  return result;
 }
