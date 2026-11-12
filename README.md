@@ -3,9 +3,6 @@
 Sistem e-voting Pemilihan Raya Mahasiswa Teknik Telekomunikasi: bilik suara berantre,
 surat suara rahasia, panel admin KPU, dan rekap hasil. Berbasis Next.js, Prisma, SQLite, NextAuth.
 
-Port of [ArdeaHN/e-voting_website_laravel](https://github.com/ArdeaHN/e-voting_website_laravel)
-tanpa bagian yang tidak aman dari sumbernya.
-
 ## Screenshots
 
 | Login | Bilik suara |
