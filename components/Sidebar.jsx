@@ -25,7 +25,7 @@ export default function Sidebar() {
   return (
     <aside className="admin-sidebar" id="accordionSidebar">
       <Link className="admin-brand" href="/dashboard" aria-label="Dashboard PEMIRA">
-        <img src="/assets/img/pemira-logo.webp" alt="Logo Pemilihan Raya" width="32" height="38" />
+        <img src="/assets/img/pemira-logo.webp?v=2" alt="Logo Pemilihan Raya" width="32" height="38" />
         <span>
           <strong>PEMIRA</strong>
           <small>Admin panel</small>
