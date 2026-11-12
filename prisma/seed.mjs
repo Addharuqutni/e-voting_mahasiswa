@@ -27,23 +27,32 @@ const now = new Date();
 const start = new Date(now); start.setHours(8, 0, 0, 0);
 const end = new Date(now); end.setHours(17, 0, 0, 0);
 
-await prisma.user.upsert({ where: { email: "admin1@gmail.com" }, update: {}, create: { name: "Admin 1", email: "admin1@gmail.com", passwordHash: await hash("adminkesatu"), role: "ADMIN" } });
-await prisma.user.upsert({ where: { email: "admin2@gmail.com" }, update: {}, create: { name: "Admin 2", email: "admin2@gmail.com", passwordHash: await hash("adminkedua"), role: "ADMIN" } });
+// Reset penuh supaya seeder idempoten: tidak ada sisa suara/sesi/jadwal dari percobaan.
+// Urutan penting: Vote -> Candidate -> User -> SystemSetting (Vote punya FK ke Candidate).
+await prisma.$transaction([
+  prisma.vote.deleteMany(),
+  prisma.candidate.deleteMany(),
+  prisma.user.deleteMany(),
+  prisma.systemSetting.deleteMany(),
+  prisma.user.createMany({
+    data: [
+      { name: "Admin 1", email: "admin1@gmail.com", passwordHash: await hash("adminkesatu"), role: "ADMIN" },
+      { name: "Admin 2", email: "admin2@gmail.com", passwordHash: await hash("adminkedua"), role: "ADMIN" },
+      ...await Promise.all(voters.map(async ([nim, name]) => ({
+        nim, name, email: `${nim}@student.ac.id`, passwordHash: await hash("password"), role: "VOTER",
+      }))),
+    ],
+  }),
+  prisma.candidate.createMany({ data: candidates }),
+  prisma.systemSetting.create({
+    data: { id: 1, isVotingOpen: true, startTime: start, endTime: end, announceAt: end },
+  }),
+]);
 
-for (const [nim, name] of voters) {
-  const email = `${nim}@student.ac.id`;
-  await prisma.user.upsert({ where: { email }, update: {}, create: { nim, name, email, passwordHash: await hash("password"), role: "VOTER" } });
-}
+// SQLite autoincrement ikut direset supaya ID mulai dari 1 lagi.
+// TRUNCATE checkpoint WAL dulu, kalau tidak halaman lama mengembalikan counter.
+await prisma.$executeRawUnsafe("DELETE FROM sqlite_sequence");
+await prisma.$queryRawUnsafe("PRAGMA wal_checkpoint(TRUNCATE)");
 
-for (const c of candidates) {
-  await prisma.candidate.upsert({ where: { electionNumber: c.electionNumber }, update: {}, create: c });
-}
-
-await prisma.systemSetting.upsert({
-  where: { id: 1 },
-  update: {},
-  create: { id: 1, isVotingOpen: true, startTime: start, endTime: end, announceAt: end },
-});
-
-console.log("seeded: 2 admin, 12 voters, 3 candidates");
+console.log("seeded: 2 admin, 12 voters, 3 candidates, 0 votes, jadwal hari ini 08:00–17:00");
 await prisma.$disconnect();

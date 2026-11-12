@@ -8,7 +8,7 @@ Database: **SQLite** (`prisma/pemira.db`) — tanpa service, tanpa port, ±40 MB
 ```bash
 npm ci
 npm run db:push      # SQLite: prisma/pemira.db (wajib sebelum start)
-npm run db:seed      # hanya sekali saat setup
+npm run db:seed      # HANYA sekali saat setup — menghapus semua data & suara!
 npm run build
 npm test             # 7 test: integritas suara + antrean + batas waktu
 curl -fsS http://127.0.0.1:3000/api/health
