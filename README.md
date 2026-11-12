@@ -1,10 +1,41 @@
-# PEMIRA — E-Voting (Next.js + Prisma + SQLite + NextAuth)
+# PEMIRA — E-Voting
 
-Port of [ArdeaHN/e-voting_website_laravel](https://github.com/ArdeaHN/e-voting_website_laravel).
-Same features (admin panel: dashboard, DPT, paslon, admin accounts, countdown/jadwal; voter: ballot + result)
-minus the insecure parts of the source.
+Sistem e-voting Pemilihan Raya Mahasiswa Teknik Telekomunikasi: bilik suara berantre,
+surat suara rahasia, panel admin KPU, dan rekap hasil. Berbasis Next.js, Prisma, SQLite, NextAuth.
 
-## Run
+Port of [ArdeaHN/e-voting_website_laravel](https://github.com/ArdeaHN/e-voting_website_laravel)
+tanpa bagian yang tidak aman dari sumbernya.
+
+## Screenshots
+
+| Login | Bilik suara |
+|---|---|
+| ![Halaman login](shots/01-login.png) | ![Bilik suara](shots/02-bilik-suara.png) |
+
+| Dashboard admin | Kelola kandidat |
+|---|---|
+| ![Dashboard admin](shots/03-dashboard.png) | ![Daftar kandidat](shots/04-kandidat.png) |
+
+| Tambah kandidat | Daftar pemilih |
+|---|---|
+| ![Form tambah kandidat](shots/05-tambah-kandidat.png) | ![Daftar pemilih](shots/06-pemilih.png) |
+
+Tangkapan layar 1440×900 dari UI saat ini, tersimpan di `shots/`.
+
+## Fitur inti
+
+- **Surat suara rahasia**: tabel `Vote` tidak punya kolom identitas pemilih; `hasVoted` dicek atomik.
+- **Antrean bilik suara**: FIFO, maks `MAX_ACTIVE_VOTERS` pemilih bersamaan, giliran 5 menit.
+- **Sesi terkunci**: satu login aktif per akun (`sessionTag`), pemilih logout otomatis 60 detik setelah memilih.
+- **Panel admin**: dashboard, DPT + impor CSV, paslon + visi/misi/CV, akun admin, jadwal & pengumuman.
+- **Rekap hasil**: terkunci sampai pemungutan ditutup dan `announceAt` lewat.
+- **Siap VPS kecil**: SQLite WAL, tanpa service database terpisah.
+
+## Stack
+
+`Next.js 15` · `Prisma 6` · `SQLite (WAL)` · `NextAuth (JWT)` · `SB Admin 2 / Bootstrap 4`
+
+## Quick start
 
 ```bash
 npm install
@@ -104,16 +135,9 @@ horizontal di 375–1440px, dan `prefers-reduced-motion` mematikan animasi.
 Tautan eksternal di topbar pemilih: [Instagram HMTT](https://www.instagram.com/hmtt_telupwt/)
 dan [BTE Telkom University Purwokerto](https://bte-pwt.telkomuniversity.ac.id/).
 
+## Kontribusi & lisensi
 
-## Screenshots
+Repo ini private untuk keperluan PEMIRA; belum ada lisensi publik ditetapkan. Untuk perubahan:
+buat branch dari `main`, jalankan `npm test` (7 test integritas wajib lulus), lalu buka PR.
+Jangan jalankan `npm run db:seed` pada database berisi suara sah.
 
-Ambil dari `shots/` (tangkap layar 1440×900 pada UI saat ini):
-
-| Halaman | Tangkapan |
-|---|---|
-| Login | ![Halaman login](shots/01-login.png) |
-| Bilik suara pemilih | ![Bilik suara](shots/02-bilik-suara.png) |
-| Dashboard admin | ![Dashboard admin](shots/03-dashboard.png) |
-| Kelola kandidat | ![Daftar kandidat](shots/04-kandidat.png) |
-| Tambah kandidat | ![Form tambah kandidat](shots/05-tambah-kandidat.png) |
-| Daftar pemilih | ![Daftar pemilih](shots/06-pemilih.png) |
