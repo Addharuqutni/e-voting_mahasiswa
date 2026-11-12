@@ -44,6 +44,7 @@ export default async function MilihPage() {
           <p className="panel-sub">Pemilihan Raya Mahasiswa Teknik Telekomunikasi</p>
           <p>Halo <strong>{user.name}</strong>, akun Anda sudah mengirim suara. Satu pemilih hanya dapat memilih satu kali.</p>
           <p className="small">Demi kerahasiaan, sistem tidak menyimpan paslon yang Anda pilih pada data pemilih.</p>
+          
         </StatusPanel>
       </VoterLayout>
     );

@@ -897,11 +897,16 @@ input.form-control::placeholder, .admin-shell input::placeholder { color: #6b728
 }
 
 /* ---------- menu pengguna (React, tanpa jQuery) ---------- */
+.voter-shell .user-menu { display: flex; align-items: center; align-self: center; }
 .user-menu { position: relative; }
-.user-menu-btn { display: flex; align-items: center; gap: 10px; padding: 4px 8px 4px 4px; border: 0; border-radius: 999px; background: none; color: var(--ui-ink); cursor: pointer; }
-.user-menu-btn:hover { background: #f3f5fa; }
+/* chip user: satu pil utuh (avatar di dalam pil, bukan menempel seperti blob) */
+.user-menu-btn { display: inline-flex; align-items: center; gap: 9px; height: 44px; padding: 0 16px 0 5px; border: 1px solid transparent; border-radius: 999px; background: #f2f5fb; color: var(--ui-ink); cursor: pointer; transition: background .15s ease, border-color .15s ease; }
+.user-menu-btn .topbar-avatar { width: 34px; height: 34px; flex: none; }
+.voter-shell .user-menu-btn { border-color: var(--ui-line); background: var(--ui-surface); }
+.user-menu-btn:hover { background: #e9effb; }
+.voter-shell .user-menu-btn:hover { border-color: #c8d2ec; background: #f7f9fd; }
 .user-menu-btn:focus-visible { outline: 2px solid var(--ui-brand); outline-offset: 2px; }
-.user-menu-name { font-size: .82rem; font-weight: 600; color: var(--ui-ink); white-space: nowrap; }
+.user-menu-name { font-size: .84rem; font-weight: 700; color: var(--ui-ink); white-space: nowrap; }
 .user-menu-panel { position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; min-width: 170px; padding: 6px; background: var(--ui-surface); border: 1px solid var(--ui-line); border-radius: 12px; box-shadow: 0 12px 32px rgba(20, 32, 64, .14); }
 .user-menu-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 12px; border: 0; border-radius: 8px; background: none; color: var(--ui-ink); font-size: .86rem; font-weight: 600; text-align: left; cursor: pointer; }
 .user-menu-item:hover { background: #f3f5fa; }

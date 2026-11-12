@@ -89,7 +89,8 @@ export async function castVoteAction(candidateId) {
   // slot bilik dilepas -> pemilih berikutnya naik
   await leaveBooth(user.id);
   await promoteNext();
-  await signOut({ redirectTo: "/selesai" });
+  // Sesi sengaja dibiarkan hidup 1 menit (lihat lib/guard.js) lalu logout otomatis.
+  redirect("/selesai");
 }
 
 /* ---------- admin ---------- */
