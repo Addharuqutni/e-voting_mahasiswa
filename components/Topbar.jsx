@@ -36,7 +36,7 @@ export default async function Topbar({ admin = false }) {
         <Link className="navbar-brand" href={user ? (user.role === "ADMIN" ? "/dashboard" : "/milih") : "/"}>
           <img src="/assets/img/logo-kampus.webp" alt="Telkom University Purwokerto" className="topbar-campus-logo" width="73" height="30" fetchPriority="high" />
           <img src="/assets/img/logo-jurusan.webp" alt="Sarjana Teknik Telekomunikasi" className="topbar-jurusan-logo" width="139" height="26" />
-          <img src="/assets/img/pemira-logo.webp" alt="Logo Pemilihan Raya" className="topbar-emblem-logo" width="27" height="32" />
+          <img src="/assets/img/pemira-logo.webp?v=2" alt="Logo Pemilihan Raya" className="topbar-emblem-logo" width="27" height="32" />
         </Link>
         <MobileSidebarToggle />
 
@@ -52,7 +52,7 @@ export default async function Topbar({ admin = false }) {
             </a>
           </li>
           {user ? (
-            <UserMenu name={displayName(user.name)} role={user.role === "ADMIN" ? "Admin" : "Voter"} />
+            <UserMenu name={displayName(user.name)} role={user.role === "ADMIN" ? "Admin" : "Pemilih"} />
           ) : (
             <li className="nav-item">
               <Link className="nav-link" href="/">Masuk</Link>
