@@ -1,4 +1,4 @@
-// Label + control + helper + inline error in one place, so every form field is
+// Label + control + helper + inline error in one place, so every modal field is
 // labelled and described consistently. A required control gets a visual asterisk.
 export default function Field({ label, htmlFor, help, error, children }) {
   const kids = Array.isArray(children) ? children : [children];

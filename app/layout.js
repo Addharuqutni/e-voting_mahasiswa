@@ -1,3 +1,4 @@
+import Script from "next/script";
 import ModalResidueCleanup from "@/components/ModalResidueCleanup";
 
 export const metadata = { title: "PEMIRA HMIF", description: "An e-voting application." };

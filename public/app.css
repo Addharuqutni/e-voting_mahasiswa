@@ -429,7 +429,9 @@ body { color: #3d4451; }
 
 .modal-header.bg-success { background-color: var(--pemira-success, #0f7a52) !important; }
 .modal-header.bg-warning { background-color: var(--pemira-warning, #946200) !important; }
-
+.dataTables_wrapper .pagination .page-link { color: #3d4451; }
+.dataTables_wrapper .pagination .page-item.active .page-link { background-color: var(--ui-brand); border-color: var(--ui-brand); color: #fff; }
+.dataTables_wrapper .pagination .page-item.disabled .page-link { color: #6b7280; }
 
 @media (max-width: 560px) {
   .paslon-card-v2.is-textonly { grid-template-columns: 1fr; }
@@ -729,6 +731,19 @@ input.form-control::placeholder, .admin-shell input::placeholder { color: #6b728
 .icon-btn:disabled { opacity: .5; cursor: not-allowed; }
 
 
+.dataTables_wrapper { padding: 0 10px 6px; }
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter { padding: 12px 0; font-size: .8rem; font-weight: 600; color: var(--ui-ink-soft); }
+.dataTables_wrapper .dataTables_filter input { height: 36px; margin-left: 6px; padding: 0 10px; border: 1px solid var(--ui-line); border-radius: 9px; background: #fafbfe; font-size: .84rem; }
+.dataTables_wrapper .dataTables_filter input:focus { outline: 0; border-color: var(--ui-brand); box-shadow: var(--ui-focus); }
+.dataTables_wrapper .dataTables_length select { height: 34px; margin: 0 6px; padding: 0 6px; border: 1px solid var(--ui-line); border-radius: 8px; background: #fafbfe; font-size: .82rem; }
+.dataTables_wrapper .dataTables_info { padding: 14px 0 0; font-size: .78rem; color: var(--ui-ink-soft); }
+.dataTables_wrapper .pagination { margin: 8px 0 0; gap: 4px; }
+.dataTables_wrapper .pagination .page-link { border: 1px solid var(--ui-line); border-radius: 8px; padding: 6px 11px; font-size: .8rem; color: var(--ui-ink); }
+.dataTables_wrapper .pagination .page-item.active .page-link { background: var(--ui-brand); border-color: var(--ui-brand); color: #fff; }
+.dataTables_wrapper .pagination .page-item.disabled .page-link { color: #6b7280; background: #fff; }
+.dataTables_wrapper .dataTables_empty { padding: 28px 12px; color: var(--ui-ink-soft); font-size: .86rem; }
+
 
 .admin-grid { display: grid; gap: 20px; align-items: start; }
 .admin-grid--2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
@@ -788,6 +803,9 @@ input.form-control::placeholder, .admin-shell input::placeholder { color: #6b728
 @media (max-width: 575.98px) {
   .admin-topbar { gap: 8px; }
   .topbar-user small { display: none; }
+  .dataTables_wrapper .dataTables_filter { float: none; text-align: left; padding-bottom: 4px; }
+  .dataTables_wrapper .dataTables_filter input { width: 100%; margin: 4px 0 0; }
+  .dataTables_wrapper .dataTables_length { float: none; text-align: left; padding-top: 10px; }
 }
 
 .admin-shell .sticky-footer { padding: 14px 28px; background: transparent !important; border-top: 1px solid var(--ui-line); }
@@ -798,7 +816,12 @@ input.form-control::placeholder, .admin-shell input::placeholder { color: #6b728
 .data-card-body { padding: 0; }
 .admin-table th:last-child, .admin-table td:last-child { width: 1%; white-space: nowrap; }
 .icon-btn--danger { color: #9a3b3b; }
-
+.dataTables_wrapper .dataTables_filter input {
+  padding-left: 32px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 10px center;
+}
 .hint-warn { color: #8a5a00; font-weight: 700; }
 
 
@@ -813,7 +836,7 @@ input.form-control::placeholder, .admin-shell input::placeholder { color: #6b728
 
 /* no horizontal scrollbar in the tables: kill DataTables' row gutters and let
    cells wrap instead of forcing a min-width */
-
+.dataTables_wrapper .row { margin-left: 0; margin-right: 0; }
 .admin-table { min-width: 0; }
 .admin-table tbody td { overflow-wrap: anywhere; }
 @media (max-width: 575.98px) {
@@ -850,6 +873,7 @@ input.form-control::placeholder, .admin-shell input::placeholder { color: #6b728
   .admin-table .avatar { width: 28px; height: 28px; font-size: .7rem; }
   .admin-table .cell-clip { max-width: 90px; }
   .admin-table .num-chip { min-width: 22px; height: 22px; }
+  .dataTables_wrapper { padding: 0; }
 }
 
 @media (max-width: 380px) {
