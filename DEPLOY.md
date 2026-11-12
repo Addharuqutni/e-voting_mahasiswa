@@ -172,6 +172,8 @@ chmod +x /usr/local/bin/pemira-backup.sh
 - Setiap giliran punya batas **5 menit** (`BATAS_MENIT` di `lib/queue.js`). Lewat batas → `sessionTag` dicabut (sesi logout), slot dilepas, Ajax berikutnya otomatis naik ke bilik.
 - State antrean tersimpan di tabel `User` (`queueJoinedAt`, `voteAdmittedAt`, `voteDeadline`) → restart VPS tidak menghapus antrean.
 - Naikkan `MAX_ACTIVE_VOTERS` hanya kalau CPU masih lega.
+- Setelah suara tercatat, sesi pemilih hidup **1 menit** agar konfirmasi sempat dibaca, lalu logout otomatis
+  (`LOGOUT_AFTER_VOTE_SECONDS` di `lib/guard.js`). Batas ini ditegakkan di server, jadi aman walau tab ditutup.
 
 ## 5. Monitoring
 
@@ -215,7 +217,7 @@ Untuk <500 pemilih: 1 worker lebih dari cukup (500 orang / 1 jam = 0,14 suara/de
 
 - Aset statis dipangkas: `public/template` 19 MB → 824 KB (14 file yang dipakai). Logo dikompresi (WebP 8–37 KB), favicon `app/icon.png` 128px (19 KB).
 - Font Nunito self-hosted (`public/fonts/nunito-latin.woff2`, 39 KB) + preload → tanpa request ke Google Fonts.
-- CSS aplikasi satu berkas (`public/app.css`, 53 KB). jQuery + Bootstrap (171 KB) hanya di halaman admin; halaman pemilih memakai `components/UserMenu.jsx` + `<dialog>` native. Chart.js `lazyOnload`, DataTables berantai (jQuery → Bootstrap → core → integrasi).
+- CSS aplikasi satu berkas (`public/app.css`, ~56 KB). jQuery + Bootstrap (171 KB) hanya di halaman admin; halaman pemilih memakai `components/UserMenu.jsx` + `<dialog>` native. Chart.js `lazyOnload`, DataTables berantai (jQuery → Bootstrap → core → integrasi).
 - `Cache-Control`: `/fonts` 1 tahun immutable, `/assets` & `/template` 7 hari + stale-while-revalidate.
 - Header keamanan aktif: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, `X-DNS-Prefetch-Control`.
 - `next` di-pin **15.5.29** (patched untuk advisory RSC/DoS & request smuggling). Advisory tersisa yang diterima: `postcss` (build-time), `sharp` (tidak dipakai — `images.unoptimized`), `prisma` CLI (devDependency).
@@ -247,6 +249,7 @@ Sisa bobot terbesar: `sb-admin-2.min.css` (167 KB) + FontAwesome (58 KB) — ren
 | Enumerasi akun | pesan error generik | `loginAction` |
 | Crash tak tertangani | boundary halaman + global | `app/error.js`, `app/global-error.js` |
 | App mati | systemd `Restart=always` + health probe | systemd unit di atas, `app/api/health/route.js` |
-| Sesicejadian | `sessionTag` dicabut saat batas 5 menit habis | `lib/guard.js` |
+| Sesi tertinggal di bilik | `sessionTag` dicabut saat batas 5 menit habis | `lib/guard.js` |
+| Sesi pemilih yang sudah memilih | `sessionTag` dicabut 60 detik setelah `votedAt`; `/selesai` menampilkan hitung mundur lalu logout | `lib/guard.js`, `components/VoteSessionTimer.jsx` |
 | Slowloris / request menahan sumber daya | `limit_req` + timeout proxy | Nginx di atas |
 | Tulis suara ganda | klaim atomik satu statement + kompensasi | `lib/vote.js` |

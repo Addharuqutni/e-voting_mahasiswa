@@ -12,7 +12,13 @@ prisma/*.db-shm
 .omp/
 dev.log
 prod.log
-shots/
+shots/*
+!shots/01-login.png
+!shots/02-bilik-suara.png
+!shots/03-dashboard.png
+!shots/04-kandidat.png
+!shots/05-tambah-kandidat.png
+!shots/06-pemilih.png
 uploads/photo/*
 uploads/cv/*
 !uploads/photo/.gitkeep

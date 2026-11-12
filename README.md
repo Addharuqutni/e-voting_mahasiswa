@@ -35,7 +35,7 @@ the process environment. Keep them in sync, or unset the shell variable.
 |---|---|
 | `users.choice` = candidate id → voter is linkable to their choice | `Vote` table has **no** user column (secret ballot); `User.hasVoted/votedAt` only |
 | `candidate.total_voter` counter, updated by an observer (race-prone, drifts) | `Vote` rows, counted with `groupBy` |
-| `POST /milihyuk` — no schedule check, no unique constraint, vote overwritable | `castVoteAction`: open-window check + `UPDATE … WHERE hasVoted=false` claim inside a transaction |
+| `POST /milihyuk` — no schedule check, no unique constraint, vote overwritable | `castVoteAction`: open-window check + atomic `UPDATE … WHERE hasVoted=false` claim (`lib/vote.js`) |
 | Password `Hash::make` (bcrypt) | `scrypt` + `timingSafeEqual` (`lib/password.js`) |
 | Session cookie, no single-session rule | JWT 60 min + `sessionTag` per login → new login revokes old session |
 | Role guard by session key | `requireUser()` reads the user row on every request |
@@ -43,9 +43,10 @@ the process environment. Keep them in sync, or unset the shell variable.
 | CSV import for DPT | `Import CSV` on `/dashboard/pemilih` (`NIM,Nama,Email,Password`) |
 | candidate resume served from `storage/` | CV behind session (`/api/cv/[id]`), files in `uploads/cv/` |
 
-UI is the original repo's SB Admin 2 theme, copied from `public/template` and `public/assets`
-(Bootstrap 4, jQuery, Chart.js v2, DataTables, FontAwesome) — no Tailwind, no CSS rewrite.
-Simplication kept: no PDF/Excel export, CSV only.
+UI memakai SB Admin 2 dari `public/template` + `public/assets` (Bootstrap 4, jQuery, Chart.js v2,
+DataTables, FontAwesome) — tanpa Tailwind. Seluruh override desain ada di **satu** berkas
+`public/app.css`. Vendor JS (DataTables) hanya dimuat di halaman admin; halaman pemilih memakai
+komponen React + `<dialog>` native. Simplifikasi yang dipertahankan: tidak ada ekspor PDF/Excel, cukup CSV.
 
 ## Deploy cepat (VPS)
 
@@ -69,8 +70,8 @@ Folder `test/` berisi `vote.test.mjs` (satu suara per pemilih, kerahasiaan ballo
 
 ## Design system
 
-Semua token & kontrol bersama ada di `public/pemira-ui.css` (dipakai halaman pemilih) dan
-`public/admin-ui.css` (khusus admin); keduanya memakai variabel yang sama dari `:root`.
+Semua token & kontrol bersama ada di satu berkas `public/app.css` (`:root`), dipakai halaman
+pemilih maupun admin.
 
 | Token | Nilai | Dipakai untuk |
 |---|---|---|
@@ -89,10 +90,27 @@ horizontal di 375–1440px, dan `prefers-reduced-motion` mematikan animasi.
 
 | Path | Who |
 |---|---|
-| `/` | login + public paslon list |
+| `/` | login |
 | `/milih` | voter ballot (2-step confirm) + antrean bilik suara (maks `MAX_ACTIVE_VOTERS` pemilih, batas 5 menit) |
-| `/selesai` | post-vote page (session is signed out by the vote action) |
+| `/selesai` | konfirmasi suara tercatat; sesi pemilih logout otomatis 60 detik setelah `votedAt` (`lib/guard.js`) |
 | `/keluar` | cancel queue / leave the booth without voting |
 | `/waktu-habis` | the 5-minute turn expired, session was closed |
 | `/hasil` | recap, locked until voting closes and `announceAt` passes |
 | `/dashboard{,/pemilih,/kandidat,/jadwal,/admin}` | admin KPU |
+
+Tautan eksternal di topbar pemilih: [Instagram HMTT](https://www.instagram.com/hmtt_telupwt/)
+dan [BTE Telkom University Purwokerto](https://bte-pwt.telkomuniversity.ac.id/).
+
+
+## Screenshots
+
+Ambil dari `shots/` (tangkap layar 1440×900 pada UI saat ini):
+
+| Halaman | Tangkapan |
+|---|---|
+| Login | ![Halaman login](shots/01-login.png) |
+| Bilik suara pemilih | ![Bilik suara](shots/02-bilik-suara.png) |
+| Dashboard admin | ![Dashboard admin](shots/03-dashboard.png) |
+| Kelola kandidat | ![Daftar kandidat](shots/04-kandidat.png) |
+| Tambah kandidat | ![Form tambah kandidat](shots/05-tambah-kandidat.png) |
+| Daftar pemilih | ![Daftar pemilih](shots/06-pemilih.png) |
