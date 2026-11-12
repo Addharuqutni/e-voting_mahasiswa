@@ -40,7 +40,7 @@ cp .env.example .env      # DATABASE_URL + AUTH_SECRET
 npm run db:push           # creates prisma/pemira.db from prisma/schema.prisma (SQLite)
 npm run db:seed           # RESET penuh: 2 admin, 12 pemilih, 3 paslon, 0 suara, jadwal hari ini 08:00–17:00
 npm run dev               # http://localhost:3000
-npm test                  # vote-integrity checks
+npm test                  # integritas suara + bilik suara lewat satu interface
 ```
 
 Seeded logins: `admin1@gmail.com / adminkesatu`, voters `22101001@student.ac.id … / password`.

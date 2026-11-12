@@ -2,10 +2,10 @@ import VoterLayout from "@/components/VoterLayout";
 import Ballot from "@/components/Ballot";
 import StatusPanel from "@/components/StatusPanel";
 import WaitingRoom from "@/components/WaitingRoom";
-import { requireUser, votingOpen, getSetting, getSessionUser } from "@/lib/guard";
+import { requireUser, getSetting } from "@/lib/guard";
 import { prisma } from "@/lib/db";
 import { fmtDT, fmtRange } from "@/lib/format";
-import { joinQueue, remainingSeconds, boothSnapshot, BATAS_MENIT } from "@/lib/queue";
+import { enter, snapshot, BOOTH_MINUTES } from "@/lib/booth.js";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 export default async function MilihPage() {
   const user = await requireUser("VOTER");
   const setting = await getSetting();
-  const queue = await joinQueue(user);
+  const queue = await enter(user);
 
   if (queue.state === "closed") {
     return (
@@ -62,7 +62,7 @@ export default async function MilihPage() {
   }
 
   const candidates = await prisma.candidate.findMany({ orderBy: { electionNumber: "asc" } });
-  const booth = await boothSnapshot();
+  const booth = await snapshot();
   return (
     <VoterLayout>
       {candidates.length === 0 ? (
@@ -76,8 +76,8 @@ export default async function MilihPage() {
           startTime={setting?.startTime ?? null}
           endTime={setting?.endTime ?? null}
           deadline={queue.deadline ?? user.voteDeadline}
-          secondsLeft={remainingSeconds(queue.deadline ?? user.voteDeadline)}
-          limitMinutes={BATAS_MENIT}
+          secondsLeft={queue.secondsLeft}
+          limitMinutes={BOOTH_MINUTES}
           booth={booth}
         />
       )}

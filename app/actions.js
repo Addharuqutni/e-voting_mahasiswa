@@ -7,10 +7,9 @@ import { AuthError } from "next-auth";
 import { signIn, signOut } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { hashPassword } from "@/lib/password";
-import { getSessionUser, requireUser, votingOpen, getSetting } from "@/lib/guard";
+import { getSessionUser, requireUser } from "@/lib/guard";
+import { enter, leave, vote } from "@/lib/booth.js";
 import { rateLimit, resetLimit } from "@/lib/rateLimit";
-import { joinQueue, leaveBooth, promoteNext, queuePosition, boothSnapshot } from "@/lib/queue";
-import { castVote } from "@/lib/vote.js";
 
 async function clientIp() {
   const h = await headers();
@@ -41,55 +40,30 @@ export async function loginAction(prev, formData) {
   }
   const user = await prisma.user.findFirst({ where: { OR: [{ email }, { nim: email }] } });
   resetLimit(`login:acct:${email}`);
-  // Pemilih baru masuk antrean (slot bilik diberikan saat ada slot kosong); admin langsung ke panel.
-  if (user?.role === "VOTER") {
-    await prisma.user.update({ where: { id: user.id }, data: { queueJoinedAt: new Date(), voteAdmittedAt: null, voteDeadline: null } });
-  }
+  // Pemilih masuk antrean saat /milih dibuka (lihat lib/booth.js enter).
+  if (user?.role === "VOTER") await leave(user.id, { promote: false });
   redirect(user?.role === "ADMIN" ? "/dashboard" : "/milih");
 }
 
 export async function logoutAction() {
   const user = await getSessionUser();
-  if (user) await leaveBooth(user.id);
+  if (user) await leave(user.id);
   await signOut({ redirectTo: "/" });
 }
 
-// Timer bilik habis: sesi diakhiri paksa, slot dikembalikan ke antrean.
+// Timer bilik habis: satu panggilan melepas slot, mencabut sesi, memajukan antrean.
 export async function voteTimeoutAction() {
   const user = await getSessionUser();
-  if (user) await leaveBooth(user.id, { expireSession: true });
-  await promoteNext();
+  if (user) await leave(user.id, { revoke: true });
   await signOut({ redirectTo: "/waktu-habis" });
-}
-
-// Setelah memilih, slot langsung dilepas supaya antrean maju.
-export async function releaseBoothAfterVote(userId) {
-  await leaveBooth(userId);
-  await promoteNext();
 }
 
 export async function castVoteAction(candidateId) {
   const user = await getSessionUser();
   if (!user) return { error: "Sesi berakhir. Silakan masuk ulang." };
-  if (!votingOpen(await getSetting())) return { error: "Pemungutan suara sudah ditutup." };
-  if (user.hasVoted) return { error: "Suara Anda sudah tercatat." };
-  // hanya pemilih yang sudah diizinkan masuk bilik (antrean) yang boleh memilih
-  if (!user.voteAdmittedAt) return { error: "Giliran Anda belum tiba. Tetap di halaman antrean." };
-  if (user.voteDeadline && user.voteDeadline <= new Date()) return { error: "Waktu memilih Anda sudah habis. Silakan masuk kembali." };
-
-  const id = Number(candidateId);
-  const candidate = await prisma.candidate.findUnique({ where: { id } });
-  if (!candidate) return { error: "Paslon tidak ditemukan." };
-
-  // Secret ballot: baris Vote tidak menyimpan user id.
-  const result = await castVote({ userId: user.id, candidateId: id });
-  if (result.error === "ALREADY_VOTED") return { error: "Suara Anda sudah tercatat." };
+  const result = await vote(user, candidateId);
   if (result.error) return { error: result.error };
-
-  // slot bilik dilepas -> pemilih berikutnya naik
-  await leaveBooth(user.id);
-  await promoteNext();
-  // Sesi sengaja dibiarkan hidup 1 menit (lihat lib/guard.js) lalu logout otomatis.
+  // Sesi sengaja dibiarkan hidup 1 menit (lihat lib/session.js) lalu logout otomatis.
   redirect("/selesai");
 }
 

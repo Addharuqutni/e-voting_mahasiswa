@@ -10,7 +10,7 @@ npm ci
 npm run db:push      # SQLite: prisma/pemira.db (wajib sebelum start)
 npm run db:seed      # HANYA sekali saat setup — menghapus semua data & suara!
 npm run build
-npm test             # 7 test: integritas suara + antrean + batas waktu
+npm test             # 7 test: integritas suara + bilik suara + status sesi
 curl -fsS http://127.0.0.1:3000/api/health
 ```
 
@@ -169,11 +169,11 @@ chmod +x /usr/local/bin/pemira-backup.sh
 ## 4. Antrean bilik suara
 
 - `MAX_ACTIVE_VOTERS=100` = berapa pemilih boleh berada di bilik suara sekaligus; sisanya menunggu (FIFO, posisi + estimasi, refresh otomatis tiap 5 detik).
-- Setiap giliran punya batas **5 menit** (`BATAS_MENIT` di `lib/queue.js`). Lewat batas → `sessionTag` dicabut (sesi logout), slot dilepas, Ajax berikutnya otomatis naik ke bilik.
+- Setiap giliran punya batas **5 menit** (`BOOTH_MINUTES` di `lib/session.js`). Lewat batas → `sessionTag` dicabut (sesi logout), slot dilepas, Ajax berikutnya otomatis naik ke bilik.
 - State antrean tersimpan di tabel `User` (`queueJoinedAt`, `voteAdmittedAt`, `voteDeadline`) → restart VPS tidak menghapus antrean.
 - Naikkan `MAX_ACTIVE_VOTERS` hanya kalau CPU masih lega.
 - Setelah suara tercatat, sesi pemilih hidup **1 menit** agar konfirmasi sempat dibaca, lalu logout otomatis
-  (`LOGOUT_AFTER_VOTE_SECONDS` di `lib/guard.js`). Batas ini ditegakkan di server, jadi aman walau tab ditutup.
+  (`VOTE_GRACE_SECONDS` di `lib/session.js`). Batas ini ditegakkan di server, jadi aman walau tab ditutup.
 
 ## 5. Monitoring
 
@@ -196,7 +196,7 @@ SQLite dengan pengaturan otomatis di `lib/db.js`:
 | `mmap_size` | 256 MB | baca file tanpa copy |
 | `journal_size_limit` | 64 MB | file WAL tidak membengkak |
 
-Jalur tulis suara (`lib/vote.js`) **tidak** memakai transaksi interaktif: klaim `hasVoted` dilakukan satu
+Jalur tulis suara (`lib/booth.js`) **tidak** memakai transaksi interaktif: klaim `hasVoted` dilakukan satu
 statement atomik (`UPDATE … WHERE hasVoted = 0`), lalu baris ballot disimpan terpisah → tidak ada
 `SQLITE_BUSY` saat banyak pemilih memilih bersamaan (terukur 289 suara/detik, p95 101 ms).
 
@@ -249,7 +249,7 @@ Sisa bobot terbesar: `sb-admin-2.min.css` (167 KB) + FontAwesome (58 KB) — ren
 | Enumerasi akun | pesan error generik | `loginAction` |
 | Crash tak tertangani | boundary halaman + global | `app/error.js`, `app/global-error.js` |
 | App mati | systemd `Restart=always` + health probe | systemd unit di atas, `app/api/health/route.js` |
-| Sesi tertinggal di bilik | `sessionTag` dicabut saat batas 5 menit habis | `lib/guard.js` |
-| Sesi pemilih yang sudah memilih | `sessionTag` dicabut 60 detik setelah `votedAt`; `/selesai` menampilkan hitung mundur lalu logout | `lib/guard.js`, `components/VoteSessionTimer.jsx` |
+| Sesi tertinggal di bilik | `sessionTag` dicabut saat batas 5 menit habis | `lib/session.js`, `lib/booth.js` |
+| Sesi pemilih yang sudah memilih | `sessionTag` dicabut 60 detik setelah `votedAt`; `/selesai` menampilkan hitung mundur lalu logout | `lib/session.js`, `lib/booth.js`, `components/VoteSessionTimer.jsx` |
 | Slowloris / request menahan sumber daya | `limit_req` + timeout proxy | Nginx di atas |
-| Tulis suara ganda | klaim atomik satu statement + kompensasi | `lib/vote.js` |
+| Tulis suara ganda | klaim atomik satu statement + kompensasi | `lib/booth.js` |

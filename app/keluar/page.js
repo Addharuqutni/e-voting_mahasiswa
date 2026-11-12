@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import VoterLayout from "@/components/VoterLayout";
 import StatusPanel from "@/components/StatusPanel";
 import { getSessionUser } from "@/lib/guard";
-import { leaveBooth } from "@/lib/queue";
+import { leave } from "@/lib/booth.js";
 import { logoutAction } from "@/app/actions";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +12,7 @@ export default async function KeluarPage({ searchParams }) {
   const params = await searchParams;
   const user = await getSessionUser();
   if (!user) redirect("/");
-  await leaveBooth(user.id);
+  await leave(user.id);
   if (params?.done === "1") redirect("/");
 
   return (

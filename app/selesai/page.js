@@ -1,16 +1,15 @@
 import VoterLayout from "@/components/VoterLayout";
 import StatusPanel from "@/components/StatusPanel";
 import VoteSessionTimer from "@/components/VoteSessionTimer";
-import { getSessionUser, LOGOUT_AFTER_VOTE_SECONDS } from "@/lib/guard";
+import { getSessionUser } from "@/lib/guard";
+import { state } from "@/lib/booth.js";
 import { fmtDT } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
 export default async function SelesaiPage() {
   const user = await getSessionUser();
-  const left = user?.hasVoted && user.votedAt
-    ? Math.max(0, LOGOUT_AFTER_VOTE_SECONDS - Math.floor((Date.now() - new Date(user.votedAt).getTime()) / 1000))
-    : 0;
+  const left = user ? (await state(user)).secondsLeft : 0;
 
   return (
     <VoterLayout>
