@@ -42,12 +42,12 @@ export default async function Topbar({ admin = false }) {
 
         <ul className="navbar-nav ml-auto">
           <li className="nav-item">
-            <a className="nav-link" href="https://www.instagram.com/hmif_ittelkompwt/" target="_blank" rel="noopener noreferrer" aria-label="Instagram HMIF">
+            <a className="nav-link" href="https://www.instagram.com/hmtt_telupwt/" target="_blank" rel="noopener noreferrer" aria-label="Instagram HMTT">
               <i className="fab fa-instagram" />
             </a>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="https://hmif.ittelkom-pwt.ac.id/" target="_blank" rel="noopener noreferrer" aria-label="Website HMIF">
+            <a className="nav-link" href="https://bte-pwt.telkomuniversity.ac.id/" target="_blank" rel="noopener noreferrer" aria-label="Website BTE">
               <i className="fas fa-globe" />
             </a>
           </li>
