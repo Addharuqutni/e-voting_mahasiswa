@@ -228,8 +228,8 @@ Hasil pengukuran (build produksi, 1440×900):
 | `/` (login) | 23 → **16** | 35 → 19 ms | 164 → **112 ms** | 88 → 71 ms |
 | `/milih` | 23 → **16** | 77 → **32 ms** | 256 → **136 ms** | 231 → 82 ms |
 | `/hasil` | 29 → **22** | 33 → 31 ms | 152 → 136 ms | 82 → 81 ms |
-| `/dashboard` | 23 → **16** | 39 → 42 ms | 120 → 152 ms | 84 → 97 ms |
-| `/dashboard/pemilih` | 23 → **16** | 75 → **39 ms** | 188 → **136 ms** | 131 → 78 ms |
+| `/dashboard` | 23 → **17** | 39 → 42 ms | 120 → 152 ms | 84 → 97 ms |
+| `/dashboard/pemilih` | 23 → **17** | 75 → **39 ms** | 188 → **136 ms** | 131 → 78 ms |
 
 Sisa bobot terbesar: `sb-admin-2.min.css` (167 KB) + FontAwesome (58 KB) — render-blocking, tapi ter-cache 7 hari.
 
@@ -238,6 +238,12 @@ Sisa bobot terbesar: `sb-admin-2.min.css` (167 KB) + FontAwesome (58 KB) — ren
 1. <10.000 pemilih: 1 VPS 2 vCPU + SQLite sudah cukup.
 2. 2 instance: Nginx `upstream` 2 node + pindahkan rate limiter ke Redis (sekarang in-memory per proses).
 3. Database terpisah: `prisma/schema.postgres.prisma` tersedia — `npx prisma generate --schema prisma/schema.postgres.prisma` + `prisma db push --schema prisma/schema.postgres.prisma`, lalu set `DATABASE_URL` ke Postgres (`?connection_limit=8&connect_timeout=10&pool_timeout=20&socket_timeout=30`) dan tune `postgresql.conf` (`shared_buffers=1GB`, `effective_cache_size=4GB`, `max_connections=100`).
+
+## 9b. Daftar pemilih: server-side pagination
+
+- Halaman `/dashboard/pemilih` mengambil 25 baris per halaman (`?page=2`) + pencarian (`?q=`) langsung di server.
+-.render tidak lagi mengirim seluruh DPT + satu modal per baris: untuk 612 pemilih HTML turun dari 3,5 MB → 46 KB, DOM node 31.354 → 620, TTFB 928 ms → 96 ms.
+- Satu modal `<dialog>` untuk tambah/edit (bukan N modal), tombol hapus memakai form server action.
 
 ## 10. Pengaman yang sudah terpasang di aplikasi
 
