@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { describe, label, localInput, parseInput, rangeLabel } from "../lib/jadwal.js";
+import { describe, label, localInput, nextToggleState, parseInput, rangeLabel } from "../lib/jadwal.js";
 
 const at = (h, m = 0) => new Date(2026, 10, 12, h, m);
 const fd = (o) => ({ get: (k) => o[k] ?? null });
@@ -41,4 +41,25 @@ test("parseInput: invalid date and reversed range are rejected at the interface"
   assert.equal(ok.error, undefined);
   assert.equal(ok.data.announceAt, null);
   assert.equal(ok.data.startTime.getHours(), 8);
+});
+
+test("nextToggleState: tombol manual selalu mengubah status yang terlihat", () => {
+  // Jadwal sudah lewat: tombol "Buka" harus benar-benar membuka suara.
+  const ended = { isVotingOpen: true, startTime: at(8), endTime: at(9), announceAt: at(23) };
+  assert.equal(describe(ended, at(10)).open, false);
+  const opened = nextToggleState(ended, at(10));
+  assert.equal(opened.data.isVotingOpen, true);
+  assert.equal(opened.data.endTime.getHours(), 23);
+  assert.equal(describe({ ...ended, ...opened.data }, at(10)).open, true);
+
+  // Masih di dalam jadwal: jendela jadwal tidak berubah.
+  const inside = { isVotingOpen: false, startTime: at(8), endTime: at(17), announceAt: at(18) };
+  const openedInside = nextToggleState(inside, at(10));
+  assert.deepEqual(openedInside.data, { isVotingOpen: true, startTime: at(8), endTime: at(17) });
+  assert.equal(describe({ ...inside, ...openedInside.data }, at(10)).open, true);
+
+  // Sedang terbuka: tombol menutup tanpa mengubah jadwal.
+  const closing = nextToggleState({ ...inside, isVotingOpen: true }, at(10));
+  assert.deepEqual(closing.data, { isVotingOpen: false });
+  assert.equal(describe({ ...inside, ...closing.data }, at(10)).open, false);
 });
