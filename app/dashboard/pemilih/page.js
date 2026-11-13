@@ -81,10 +81,10 @@ export default async function PemilihPage() {
 
       <section className="panel-card" aria-labelledby="csv-title">
         <h2 id="csv-title">Impor DPT dari CSV</h2>
-        <p className="panel-hint">Satu pemilih per baris dengan format NIM, Nama, Email, Password. Baris dengan NIM atau email yang sudah ada akan dilewati.</p>
+        <p className="panel-hint">Satu pemilih per baris dengan format NIM, Nama, Email, Password. CSV atau Excel (.xlsx). Baris dengan NIM atau email yang sudah ada akan dilewati.</p>
         <ActionForm action={importVotersCsv} submit="Impor CSV" submitClass="btn-pilih">
           <Field label="File CSV" htmlFor="csvFile">
-            <input id="csvFile" name="file" type="file" accept=".csv,text/csv" className="form-control" required />
+            <input id="csvFile" name="file" type="file" accept=".csv,text/csv,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" className="form-control" required />
           </Field>
         </ActionForm>
       </section>

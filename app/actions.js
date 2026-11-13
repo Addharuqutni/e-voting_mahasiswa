@@ -7,6 +7,7 @@ import { AuthError } from "next-auth";
 import { signIn, signOut } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { hashPassword } from "@/lib/password";
+import { parseXlsx } from "@/lib/xlsx";
 import { getSessionUser, requireUser } from "@/lib/guard";
 import { enter, leave, vote } from "@/lib/booth.js";
 import { update as updateSchedule, toggle as toggleSchedule } from "@/lib/jadwal.js";
@@ -142,31 +143,34 @@ export async function deleteUser(formData) {
 export async function importVotersCsv(formData) {
   await requireUser("ADMIN");
   const file = formData.get("file");
-  if (!file || typeof file === "string") return { error: "File CSV tidak ditemukan." };
-  const text = (await file.text()).replace(/^\uFEFF/, "");
-  const rows = text.split(/\r?\n/).filter((l) => l.trim());
-  if (!rows.length) return { error: "CSV kosong." };
-  const header = rows[0].toLowerCase();
-  const body = header.includes("nama") || header.includes("name") ? rows.slice(1) : rows;
+  if (!file || typeof file === "string") return { error: "File CSV/XLSX tidak ditemukan." };
+  const buf = Buffer.from(await file.arrayBuffer());
+  let rows;
+  if (buf[0] === 0x50 && buf[1] === 0x4b) {
+    try { rows = parseXlsx(buf); } catch (e) { return { error: "Gagal membaca XLSX: " + e.message }; }
+  } else {
+    const text = buf.toString("utf8").replace(/^\uFEFF/, "");
+    rows = text.split(/\r?\n/).filter((l) => l.trim()).map((l) => l.split(",").map((c) => c.trim().replace(/^"|"$/g, "")));
+  }
+  if (!rows.length) return { error: "File kosong." };
+  const header = (rows[0] || []).map((c) => String(c).toLowerCase()).join(" ");
+  const body = header.includes("nama") || header.includes("name") || header.includes("nim") ? rows.slice(1) : rows;
   const created = [];
-  for (const line of body) {
-    const [nim, name, email, password] = line.split(",").map((c) => c.trim().replace(/^"|"$/g, ""));
+  for (const row of body) {
+    const cells = Array.isArray(row) ? row : String(row).split(",").map((c) => c.trim().replace(/^"|"$/g, ""));
+    const [nim, name, email, password] = cells.map((c) => String(c ?? "").trim());
     if (!nim || !name || !email || !password) continue;
     created.push({ nim, name, email: email.toLowerCase(), passwordHash: await hashPassword(password) });
   }
   if (!created.length) return { error: "Tidak ada baris valid. Format: NIM,Nama,Email,Password" };
-  // One insert per row: works on both PostgreSQL and SQLite (SQLite has no createMany).
-  let imported = 0, skipped = 0;
+  let imported = 0, skipped = 0, skippedNims = [];
   for (const row of created) {
-    try {
-      await prisma.user.create({ data: row });
-      imported += 1;
-    } catch {
-      skipped += 1; // NIM/email sudah dipakai
-    }
+    try { await prisma.user.create({ data: row }); imported += 1; }
+    catch { skipped += 1; skippedNims.push(row.nim); } // NIM/email sudah dipakai
   }
   revalidatePath("/dashboard/pemilih");
-  return { ok: `${imported} pemilih diimpor, ${skipped} dilewati (duplikat).` };
+  const detail = skippedNims.length ? ` Dilewati: ${skippedNims.slice(0, 5).join(", ")}${skippedNims.length > 5 ? "..." : ""}.` : "";
+  return { ok: `${imported} pemilih diimpor, ${skipped} dilewati (duplikat).${detail}` };
 }
 
 export async function saveSchedule(formData) {
