@@ -6,6 +6,9 @@ const palette = ["#4e73df", "#1cc88a", "#36b9cc", "#f6c23e", "#e74a3b", "#858796
 // Mirrors template/js/demo/chart-bar-demo.js (Chart.js v2) from the original repo.
 export default function BarChart({ data }) {
   const ref = useRef(null);
+  // Redraw hanya saat angkanya berubah: AutoRefresh memanggil router.refresh()
+  // berkala dan objek data selalu baru, jadi bandingkan isinya.
+  const key = JSON.stringify(data);
 
   useEffect(() => {
     let chart;
@@ -42,7 +45,7 @@ export default function BarChart({ data }) {
       clearInterval(timer);
       chart?.destroy();
     };
-  }, [data]);
+  }, [key]);
 
   const total = Object.values(data).reduce((a, b) => a + b, 0);
   const summary = Object.entries(data)

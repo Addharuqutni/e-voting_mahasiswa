@@ -3,6 +3,7 @@ import ToggleVoting from "@/components/ToggleVoting";
 import Field from "@/components/Field";
 import { saveSchedule } from "@/app/actions";
 import { current } from "@/lib/jadwal.js";
+import AutoRefresh from "@/components/AutoRefresh";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +13,7 @@ export default async function JadwalPage() {
 
   return (
     <>
+      <AutoRefresh />
       <header className="page-head">
         <div>
           <h1>Jadwal &amp; countdown</h1>

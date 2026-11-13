@@ -1,4 +1,5 @@
 import VoterLayout from "@/components/VoterLayout";
+import AutoRefresh from "@/components/AutoRefresh";
 import StatusPanel from "@/components/StatusPanel";
 import BarChart from "@/components/BarChart";
 import ChartLoader from "@/components/ChartLoader";
@@ -26,6 +27,7 @@ export default async function HasilPage() {
     const canVote = open && user?.role === "VOTER" && !user.hasVoted;
     return (
       <VoterLayout>
+        <AutoRefresh />
         <StatusPanel
           tone="wait"
           icon="far fa-clock"

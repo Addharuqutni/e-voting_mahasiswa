@@ -3,6 +3,7 @@ import ChartLoader from "@/components/ChartLoader";
 import { prisma } from "@/lib/db";
 import { current } from "@/lib/jadwal.js";
 import { pct } from "@/lib/format";
+import AutoRefresh from "@/components/AutoRefresh";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,7 @@ export default async function DashboardPage() {
 
   return (
     <>
+      <AutoRefresh />
       <div className="dash-head">
         <div>
           <h1>Dashboard</h1>

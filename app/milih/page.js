@@ -1,4 +1,5 @@
 import VoterLayout from "@/components/VoterLayout";
+import AutoRefresh from "@/components/AutoRefresh";
 import Ballot from "@/components/Ballot";
 import StatusPanel from "@/components/StatusPanel";
 import WaitingRoom from "@/components/WaitingRoom";
@@ -19,9 +20,9 @@ export default async function MilihPage() {
   if (queue.state === "closed") {
     return (
       <VoterLayout>
+        <AutoRefresh />
         <StatusPanel
           icon="far fa-clock"
-          title="Pemungutan suara ditutup"
           actions={<a className="btn-outline" href="/hasil">Lihat hasil pemilihan</a>}
           meta={<>Jadwal: {jadwal.rangeLabel}</>}
         >
