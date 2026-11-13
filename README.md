@@ -26,7 +26,7 @@ Tangkapan layar 1440×900 dari UI saat ini, tersimpan di `shots/`.
 - **Sesi terkunci**: satu login aktif per akun (`sessionTag`), pemilih logout otomatis 60 detik setelah memilih.
 - **Panel admin**: dashboard, DPT + impor CSV, paslon + visi/misi/CV, akun admin, jadwal & pengumuman.
 - **Rekap hasil**: terkunci sampai pemungutan ditutup dan `announceAt` lewat.
-- **Kontrol manual**: tombol buka/tutup di halaman Jadwal berlaku langsung; bila rentang jadwal sudah lewat, jendela voting diperpanjang ke waktu pengumuman.
+- **Jadwal otomatis**: menyimpan jadwal meng-arm otomatisasi — pemungutan dibuka pada Mulai dan ditutup pada Selesai (dihitung tiap request, tanpa cron); tombol buka/tutup manual tetap berlaku langsung, dan bila rentang sudah lewat jendela diperpanjang ke waktu pengumuman.
 - **Siap VPS kecil**: SQLite WAL, tanpa service database terpisah.
 
 ## Stack

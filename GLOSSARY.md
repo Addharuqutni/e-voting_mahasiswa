@@ -29,5 +29,5 @@ Keadaan satu login Pemilih: belum masuk, menunggu, berada di Bilik suara, sudah 
 _Avoid_: session state, auth state
 
 **Jadwal**:
-Rentang waktu pemungutan suara dan waktu pengumuman hasil, termasuk aturan kapan pemungutan dibuka dan hasil boleh tampil. Tombol buka/tutup manual berlaku langsung: bila rentang jadwal sudah lewat, jendela voting diperpanjang (sampai waktu pengumuman) supaya suara benar-benar bisa masuk.
+Rentang waktu pemungutan suara dan waktu pengumuman hasil, termasuk aturan kapan pemungutan dibuka dan hasil boleh tampil. Menyimpan jadwal mengaktifkan otomatisasi: dibuka pada Mulai dan ditutup pada Selesai (dihitung tiap request, tanpa cron). Tombol buka/tutup manual tetap berlaku langsung; Tutup mematikan otomatisasi sampai jadwal disimpan ulang atau tombol Buka ditekan.
 _Avoid_: setting, schedule

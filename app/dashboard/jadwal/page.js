@@ -24,6 +24,8 @@ export default async function JadwalPage() {
           <h2 id="jadwal-form-title">Jadwal pemungutan</h2>
           <p className="panel-hint">
             Waktu memakai zona waktu server (WIB). Selesai harus setelah mulai.
+            Menyimpan jadwal mengaktifkan otomatisasi: pemungutan dibuka pada waktu
+            Mulai dan ditutup pada waktu Selesai tanpa perlu menekan tombol.
             {open && <span className="hint-warn"> Perubahan saat pemungutan sedang berlangsung langsung berlaku ke semua pemilih.</span>}
           </p>
 
