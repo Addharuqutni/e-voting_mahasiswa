@@ -14,7 +14,7 @@ function InstagramLink({ handle }) {
   );
 }
 
-export default function Ballot({ candidates, user, rangeLabel, secondsLeft, limitMinutes, booth }) {
+export default function Ballot({ candidates, user, rangeLabel, secondsLeft, limitMinutes }) {
   const [picked, setPicked] = useState(null);
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
@@ -61,7 +61,6 @@ export default function Ballot({ candidates, user, rangeLabel, secondsLeft, limi
           <i className="far fa-clock" aria-hidden="true" />
           Jadwal: {rangeLabel} WIB
         </span>
-        {booth && <span className="meta-item">Bilik terisi {booth.inBooth}/{booth.slots} · antrean {booth.waiting}</span>}
       </div>
 
       <div className="paslon-grid-v2">

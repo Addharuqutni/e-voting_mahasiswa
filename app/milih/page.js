@@ -7,7 +7,7 @@ import { requireUser } from "@/lib/guard";
 import { current } from "@/lib/jadwal.js";
 import { prisma } from "@/lib/db";
 import { fmtDT } from "@/lib/format";
-import { enter, snapshot, BOOTH_MINUTES } from "@/lib/booth.js";
+import { enter, BOOTH_MINUTES } from "@/lib/booth.js";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -64,7 +64,6 @@ export default async function MilihPage() {
   }
 
   const candidates = await prisma.candidate.findMany({ orderBy: { electionNumber: "asc" } });
-  const booth = await snapshot();
   return (
     <VoterLayout>
       {candidates.length === 0 ? (
@@ -79,7 +78,6 @@ export default async function MilihPage() {
           deadline={queue.deadline ?? user.voteDeadline}
           secondsLeft={queue.secondsLeft}
           limitMinutes={BOOTH_MINUTES}
-          booth={booth}
         />
       )}
     </VoterLayout>
