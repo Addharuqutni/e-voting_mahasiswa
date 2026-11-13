@@ -31,7 +31,7 @@ export default function LoginForm() {
           id="email"
           autoComplete="username"
           enterKeyHint="next"
-          placeholder="nama@student.ac.id atau NIM"
+          placeholder="nama@telkomuniversity.ac.id atau NIM"
           aria-invalid={invalid}
           aria-describedby={invalid ? "login-error" : undefined}
           required
