@@ -512,6 +512,7 @@ body { color: #3d4451; }
 .paslon-card-v2 .paslon-body { gap: 4px; padding: 16px 18px 0; }
 .paslon-card-v2 .paslon-body h2 { font-size: .98rem; text-transform: uppercase; letter-spacing: .01em; }
 .paslon-label { display: inline-block; width: fit-content; margin: 8px 0 0; padding: 3px 12px; border-radius: 6px; background: var(--ui-brand); color: #fff; font-size: .68rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.paslon-label--misi { background: var(--ui-success); }
 .paslon-card-v2 .paslon-body p { font-size: .86rem; }
 .paslon-misi { margin: 4px 0 0; padding-left: 20px; font-size: .85rem; line-height: 1.55; color: var(--ui-ink-soft); }
 .paslon-misi li { margin-bottom: 3px; }

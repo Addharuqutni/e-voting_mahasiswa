@@ -85,7 +85,7 @@ export default function Ballot({ candidates, user, rangeLabel, secondsLeft, limi
               <span className="paslon-label">Visi</span>
               <p>{c.vision}</p>
 
-              <span className="paslon-label">Misi</span>
+              <span className="paslon-label paslon-label--misi">Misi</span>
               <ol className="paslon-misi">
                 {String(c.mission ?? "").split(/\r?\n/).filter(Boolean).map((line, i) => <li key={i}>{line}</li>)}
               </ol>
