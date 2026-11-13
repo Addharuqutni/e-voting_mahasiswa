@@ -13,14 +13,14 @@ const voters = [
 
 const candidates = [
   { electionNumber: 1, leaderName: "Arya Pradana", viceName: "Nadia Kusuma", instagram: "aryanadia.pemira",
-    vision: "Himpunan yang terbuka, responsif, dan berpihak pada kebutuhan mahasiswa.",
-    mission: "Transparansi laporan keuangan dan program kerja setiap bulan.\nLayanan advokasi akademik dengan respons maksimal 2x24 jam.\nPusat pengembangan karier dan informasi beasiswa terpadu." },
+    vision: "Mewujudkan HMTT sebagai himpunan yang terbuka, responsif, dan berpihak pada kebutuhan mahasiswa Teknik Telekomunikasi — dengan tata kelola yang transparan, layanan akademik yang cepat, dan ruang tumbuh yang setara bagi seluruh angkatan.",
+    mission: "Menerbitkan laporan keuangan dan capaian program kerja setiap bulan melalui kanal resmi himpunan, lengkap dengan rincian anggaran dan realisasinya.\nMenyediakan layanan advokasi akademik dengan jaminan respons maksimal 2x24 jam, termasuk pendampingan sengketa nilai dan pengurusan cuti.\nMembangun pusat informasi karier dan beasiswa yang terpadu, memperbarui peluang magang dan beasiswa setiap minggu.\nMenggelar forum terbuka setiap semester agar mahasiswa dapat menyampaikan masukan langsung kepada pengurus tanpa perantara.\nMenghadirkan program pendampingan akademik kakak-adik angkatan untuk mata kuliah dengan tingkat kelulusan rendah.\nBekerja sama dengan laboratorium dan dosen untuk membuka akses praktikum tambahan bagi mahasiswa yang membutuhkan." },
   { electionNumber: 2, leaderName: "Bagas Wirawan", viceName: "Salsabila Rahma", instagram: "bagassalsa",
-    vision: "Kemandirian ekonomi mahasiswa lewat kolaborasi lintas departemen.",
-    mission: "Inkubator usaha mahasiswa dengan pendampingan alumni.\nPelatihan literasi finansial dan digital tiap semester.\nKolaborasi riset dan kompetisi antar fakultas." },
+    vision: "Mendorong kemandirian ekonomi mahasiswa Teknik Telekomunikasi melalui kolaborasi lintas departemen, penguatan usaha berbasis keahlian, dan akses modal yang sehat bagi seluruh angkatan.",
+    mission: "Membuka inkubator usaha mahasiswa dengan pendampingan alumni dan mitra industri selama satu semester penuh.\nMenyelenggarakan pelatihan literasi finansial dan pemasaran digital setiap semester, terbuka untuk seluruh angkatan.\nMemfasilitasi kolaborasi riset dan kompetisi antar fakultas dengan pendanaan awal bagi tim yang lolos seleksi.\nMembangun katalog jasa dan produk mahasiswa sebagai kanal promosi resmi himpunan.\nMenegosiasikan harga khusus perangkat dan langganan perangkat lunak bagi mahasiswa melalui kerja sama vendor.\nMengadakan bursa kerja dan temu mitra setiap tahun untuk mempertemukan mahasiswa dengan perusahaan telekomunikasi." },
   { electionNumber: 3, leaderName: "Rizky Hidayat", viceName: "Talita Anjani", instagram: "rizky.talita",
-    vision: "Budaya organisasi yang inklusif, suportif, dan bebas perundungan.",
-    mission: "Satuan tugas anti-perundungan dengan kanal laporan anonim.\nRuang kreatif dan komunitas minat bakat di tiap departemen.\nProgram mentoring kakak-adik angkatan." },
+    vision: "Membangun budaya organisasi yang inklusif, suportif, dan bebas perundungan, serta memastikan setiap mahasiswa merasa aman dan dihargai di lingkungan himpunan.",
+    mission: "Membentuk satuan tugas anti-perundungan dengan kanal pelaporan anonim dan prosedur penanganan yang jelas.\nMenyediakan ruang kreatif dan komunitas minat bakat di setiap departemen, lengkap dengan jadwal penggunaan yang adil.\nMenjalankan program mentoring kakak-adik angkatan dengan kurikulum adaptasi kampus yang terstruktur.\nMengadakan sesi konseling rutin bersama psikolog kampus setiap dua minggu sekali, tanpa biaya.\nMenyusun kode etik organisasi bersama seluruh pengurus dan mensosialisasikannya di awal kepengurusan.\nMemastikan setiap kegiatan himpunan dapat diakses mahasiswa dengan kebutuhan khusus, termasuk akomodasi lokasi dan materi." },
 ];
 
 const now = new Date();
